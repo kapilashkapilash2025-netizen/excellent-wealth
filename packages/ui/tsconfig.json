@@ -1,0 +1,10 @@
+{
+  "extends": "@excellent-wealth/config/tsconfig.library.json",
+  "compilerOptions": {
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "jsx": "react-jsx",
+    "outDir": "dist",
+    "rootDir": "."
+  },
+  "include": ["src", "vitest.setup.ts"]
+}

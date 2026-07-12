@@ -1,0 +1,20 @@
+{
+  "name": "@excellent-wealth/config",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Shared TypeScript, ESLint, and Prettier configuration for Excellent Wealth workspaces.",
+  "license": "MIT",
+  "files": [
+    "tsconfig.base.json",
+    "tsconfig.nextjs.json",
+    "tsconfig.library.json",
+    "eslint.base.js"
+  ],
+  "exports": {
+    "./tsconfig.base.json": "./tsconfig.base.json",
+    "./tsconfig.nextjs.json": "./tsconfig.nextjs.json",
+    "./tsconfig.library.json": "./tsconfig.library.json",
+    "./eslint.base.js": "./eslint.base.js"
+  }
+}
