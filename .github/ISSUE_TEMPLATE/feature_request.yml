@@ -1,0 +1,46 @@
+name: Feature request
+description: Suggest a feature or enhancement for Excellent Wealth
+title: 'feat: '
+labels: ['enhancement']
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+      description: What financial task or need is currently unsupported or awkward?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+    validations:
+      required: false
+
+  - type: dropdown
+    id: module
+    attributes:
+      label: Related module (if known)
+      options:
+        - User foundation
+        - Financial dashboard
+        - Transactions
+        - Budgeting
+        - Assets and liabilities
+        - Goal planning
+        - Debt planner
+        - Investment analytics
+        - Business finance
+        - Reports
+        - Explainable intelligence
+        - Other / not sure
+    validations:
+      required: false
