@@ -10,6 +10,19 @@ concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+# Least-privilege default; individual jobs opt into anything more.
+permissions:
+  contents: read
+
+env:
+  # Not a real secret — a fixed, non-production value so Prisma generation
+  # and env validation succeed even in jobs without a live database. The
+  # backend-integration job below points DATABASE_URL at its own Postgres
+  # service container instead.
+  DATABASE_URL: postgresql://postgres:postgres@localhost:5432/excellent_wealth_test?schema=public
+  WEB_ORIGIN: http://localhost:3000
+  SESSION_SECRET: ci-only-session-secret-not-used-outside-automated-runs-000
+
 jobs:
   quality:
     name: Lint, typecheck, test, build
@@ -38,16 +51,66 @@ jobs:
       - name: Type check
         run: pnpm typecheck
 
-      - name: Test
+      - name: Unit tests
         run: pnpm test
 
       - name: Build
         run: pnpm build
 
+  backend-integration:
+    name: Backend integration and security tests
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: excellent_wealth_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Validate Prisma schema
+        run: pnpm --filter @excellent-wealth/api prisma:validate
+
+      - name: Apply migrations to the test database
+        run: pnpm --filter @excellent-wealth/api prisma:migrate:deploy
+
+      - name: Integration tests
+        run: pnpm --filter @excellent-wealth/api test:integration
+
+      - name: Security tests
+        run: pnpm --filter @excellent-wealth/api test:security
+
   dependency-review:
     name: Dependency review
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
+    permissions:
+      contents: read
+      pull-requests: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
