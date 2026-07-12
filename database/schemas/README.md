@@ -1,5 +1,7 @@
 # database/schemas
 
-Reference copies of the Prisma schema and entity-relationship documentation
-for the Excellent Wealth data model, kept here for quick review without
-opening `apps/api`. Populated starting in **Version 0.2**.
+The authoritative Prisma schema lives at
+[apps/api/prisma/schema.prisma](../../apps/api/prisma/schema.prisma) (`User`,
+`Session`, `AuditEvent` as of Version 0.2). This directory is reserved for
+entity-relationship diagrams or other schema documentation that doesn't
+belong inside `apps/api` itself — currently empty beyond this README.

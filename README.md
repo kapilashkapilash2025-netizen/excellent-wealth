@@ -40,15 +40,15 @@ See [ROADMAP.md](ROADMAP.md) for the full milestone plan and
 
 ## Architecture overview
 
-A TypeScript pnpm monorepo: a Next.js frontend (`apps/web`), a planned
-Node.js API (`apps/api`), and shared packages for domain types, validation,
-a decimal-safe financial calculation engine, and a design system. See
-[docs/architecture/overview.md](docs/architecture/overview.md) and
-[docs/decisions](docs/decisions) for the reasoning behind these choices.
+A TypeScript pnpm monorepo: a Next.js frontend (`apps/web`), a Fastify +
+Prisma + PostgreSQL API (`apps/api`), and shared packages for domain types,
+validation, a decimal-safe financial calculation engine, and a design
+system. See [docs/architecture/overview.md](docs/architecture/overview.md)
+and [docs/decisions](docs/decisions) for the reasoning behind these choices.
 
 ```text
 apps/web                  Next.js frontend
-apps/api                  Node.js/TypeScript API (planned)
+apps/api                  Fastify + Prisma API — authentication implemented (Version 0.2)
 packages/types             Shared domain types
 packages/validation          Shared Zod validation schemas
 packages/financial-engine     Decimal-safe financial formulas + unit tests
@@ -59,14 +59,16 @@ packages/analytics               Explainable insight engine (planned)
 ## Technology stack
 
 - **Frontend:** Next.js, React, TypeScript, Tailwind CSS
-- **Backend (planned):** Node.js, TypeScript, PostgreSQL, Prisma, Zod
+- **Backend:** Node.js, TypeScript, Fastify, PostgreSQL, Prisma, Zod, Argon2id
 - **Testing:** Vitest, React Testing Library, Playwright (planned)
 - **Tooling:** pnpm workspaces, ESLint, Prettier, Husky, lint-staged,
   commitlint, GitHub Actions, Dependabot
 
 ## Local setup
 
-Requires Node.js 20+ and pnpm.
+Requires Node.js 20+, pnpm, and a PostgreSQL instance (see
+[docs/development/database-setup.md](docs/development/database-setup.md) —
+Docker Compose is the quickest path).
 
 ```bash
 git clone https://github.com/kapilashkapilash2025-netizen/excellent-wealth.git
@@ -77,8 +79,8 @@ pnpm install
 ### Environment configuration
 
 ```bash
-cp .env.example .env
-# edit .env with local values — never commit this file
+cp .env.example apps/api/.env
+# edit apps/api/.env with local values — never commit this file
 ```
 
 ### Run the web app
@@ -87,12 +89,26 @@ cp .env.example .env
 pnpm --filter @excellent-wealth/web dev
 ```
 
+### Run the API
+
+```bash
+docker compose up -d postgres
+pnpm --filter @excellent-wealth/api prisma:migrate
+pnpm --filter @excellent-wealth/api dev
+```
+
+See [docs/development/api-setup.md](docs/development/api-setup.md) and
+[docs/api/authentication.md](docs/api/authentication.md) for endpoint
+details and troubleshooting.
+
 ## Test commands
 
 ```bash
-pnpm test         # run all workspace unit/component tests
+pnpm test         # run all workspace unit/component tests (no database required)
 pnpm typecheck    # TypeScript project-wide type checking
 pnpm lint         # ESLint across the monorepo
+pnpm --filter @excellent-wealth/api test:integration   # requires PostgreSQL — see docs/development/api-setup.md
+pnpm --filter @excellent-wealth/api test:security        # requires PostgreSQL
 ```
 
 ## Build commands

@@ -5,7 +5,7 @@ lists its planned scope; see [docs/PROJECT_STATUS.md](docs/PROJECT_STATUS.md)
 for what's actually done right now and [CHANGELOG.md](CHANGELOG.md) for a
 dated record of shipped changes.
 
-## Version 0.1 — Repository foundation (in progress)
+## Version 0.1 — Repository foundation (complete)
 
 - [x] Monorepo structure (`apps/*`, `packages/*`, `database/*`, `tests/*`, `docs/*`)
 - [x] Shared TypeScript/ESLint/Prettier configuration
@@ -15,14 +15,15 @@ dated record of shipped changes.
 - [x] Design system foundation (`Button`, `Card`, `Disclaimer`) with component tests
 - [x] Responsive, accessible landing page
 - [x] Documentation foundation (README, security docs, ADRs, governance docs)
-- [ ] CI pipeline (lint, typecheck, test, build)
+- [x] CI pipeline (lint, typecheck, test, build)
 
-## Version 0.2 — Authentication foundation
+## Version 0.2 — Authentication foundation (complete)
 
-- Database schema and Prisma setup (`apps/api`, `database/`)
-- Registration, login, logout, password-reset architecture
-- User profile, preferences, currency/timezone/theme/accessibility settings
-- Secure session management, rate limiting, security baseline hardening
+- [x] Database schema and Prisma setup (`apps/api`, PostgreSQL, Docker Compose)
+- [x] Registration, login, logout (password-reset architecture deferred — see docs/PROJECT_STATUS.md)
+- [x] Currency/timezone captured at registration (theme/accessibility settings deferred to a user-profile milestone)
+- [x] Secure session management (opaque, server-side, Argon2id passwords), rate limiting, account lockout, security baseline hardening
+- [x] CI extended with a PostgreSQL-backed integration/security test job
 
 ## Version 0.3 — Transactions
 

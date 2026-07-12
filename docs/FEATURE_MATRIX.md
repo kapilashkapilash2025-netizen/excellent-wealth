@@ -11,12 +11,16 @@ Status legend: ✅ done · 🚧 in progress · ⬜ not started
 | Compound growth simulator (engine)             | ✅     | ✅      | ⬜       | ✅    | ✅   | n/a             |
 | Emergency fund assessment                      | ✅     | ✅      | ⬜       | ✅    | ✅   | n/a             |
 | Explainable financial health score (engine)    | ✅     | ✅      | ⬜       | ✅    | ✅   | n/a             |
-| Auth validation schemas                        | ✅     | ✅      | ⬜       | ✅    | ✅   | 🚧              |
+| Auth validation schemas                        | ✅     | ✅      | ⬜       | ✅    | ✅   | ✅              |
 | Transaction validation schema                  | ✅     | ✅      | ⬜       | ✅    | ✅   | 🚧              |
 | Design system: Button, Card, Disclaimer        | ✅     | n/a     | ✅       | ✅    | ✅   | n/a             |
 | Landing page                                   | ✅     | n/a     | ✅       | ✅    | ✅   | n/a             |
-| User registration / login                      | ⬜     | ⬜      | ⬜       | ⬜    | ⬜   | ⬜              |
-| Session management                             | ⬜     | ⬜      | ⬜       | ⬜    | ⬜   | ⬜              |
+| User registration / login / logout             | ✅     | ✅      | ⬜       | ✅    | ✅   | ✅              |
+| Current-user endpoint (`/auth/me`)             | ✅     | ✅      | ⬜       | ✅    | ✅   | ✅              |
+| Session management (opaque, server-side)       | ✅     | ✅      | n/a      | ✅    | ✅   | ✅              |
+| Account lockout / rate limiting                | ✅     | ✅      | n/a      | ✅    | ✅   | ✅              |
+| Audit-event foundation                         | ✅     | ✅      | n/a      | ✅    | ✅   | 🚧              |
+| Health/readiness endpoints                     | ✅     | ✅      | n/a      | ✅    | ✅   | n/a             |
 | Transactions CRUD & import/export              | ⬜     | ⬜      | ⬜       | ⬜    | ⬜   | ⬜              |
 | Budgeting                                      | ⬜     | ⬜      | ⬜       | ⬜    | ⬜   | ⬜              |
 | Assets & liabilities dashboard                 | ⬜     | ⬜      | ⬜       | ⬜    | ⬜   | ⬜              |
