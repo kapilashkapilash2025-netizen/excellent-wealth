@@ -52,6 +52,83 @@ describe('registrationInputSchema', () => {
     });
     expect(result.success).toBe(false);
   });
+
+  it('defaults currency to USD and timezone to UTC when omitted', () => {
+    const result = registrationInputSchema.safeParse({
+      email: 'user@example.com',
+      password: 'Str0ngPassphrase',
+      confirmPassword: 'Str0ngPassphrase',
+      displayName: 'Test User',
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.currency).toBe('USD');
+      expect(result.data.timezone).toBe('UTC');
+    }
+  });
+
+  it('accepts an explicit valid currency and timezone', () => {
+    const result = registrationInputSchema.safeParse({
+      email: 'user@example.com',
+      password: 'Str0ngPassphrase',
+      confirmPassword: 'Str0ngPassphrase',
+      displayName: 'Test User',
+      currency: 'INR',
+      timezone: 'Asia/Colombo',
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it('rejects an unsupported currency code', () => {
+    const result = registrationInputSchema.safeParse({
+      email: 'user@example.com',
+      password: 'Str0ngPassphrase',
+      confirmPassword: 'Str0ngPassphrase',
+      displayName: 'Test User',
+      currency: 'XYZ',
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it('rejects an invalid IANA timezone', () => {
+    const result = registrationInputSchema.safeParse({
+      email: 'user@example.com',
+      password: 'Str0ngPassphrase',
+      confirmPassword: 'Str0ngPassphrase',
+      displayName: 'Test User',
+      timezone: 'Not/AZone',
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it('rejects an oversized display name', () => {
+    const result = registrationInputSchema.safeParse({
+      email: 'user@example.com',
+      password: 'Str0ngPassphrase',
+      confirmPassword: 'Str0ngPassphrase',
+      displayName: 'a'.repeat(121),
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it('rejects unknown fields', () => {
+    const result = registrationInputSchema.safeParse({
+      email: 'user@example.com',
+      password: 'Str0ngPassphrase',
+      confirmPassword: 'Str0ngPassphrase',
+      displayName: 'Test User',
+      isAdmin: true,
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it('rejects missing required fields', () => {
+    const result = registrationInputSchema.safeParse({
+      email: 'user@example.com',
+      password: 'Str0ngPassphrase',
+    });
+    expect(result.success).toBe(false);
+  });
 });
 
 describe('loginInputSchema', () => {

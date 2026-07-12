@@ -1,4 +1,6 @@
 import { z } from 'zod';
+import { currencyCodeSchema } from './currency.js';
+import { displayNameSchema, timezoneSchema } from './locale.js';
 
 // Requires at least one lowercase letter, one uppercase letter, one digit,
 // and a minimum length of 12 characters. Deliberately does not require a
@@ -19,17 +21,22 @@ export const registrationInputSchema = z
     email: z.string().trim().toLowerCase().email('Enter a valid email address'),
     password: passwordSchema,
     confirmPassword: z.string(),
-    displayName: z.string().trim().min(1).max(120),
+    displayName: displayNameSchema,
+    currency: currencyCodeSchema.default('USD'),
+    timezone: timezoneSchema.default('UTC'),
   })
+  .strict()
   .refine((data) => data.password === data.confirmPassword, {
     message: 'Passwords do not match',
     path: ['confirmPassword'],
   });
 
-export const loginInputSchema = z.object({
-  email: z.string().trim().toLowerCase().email('Enter a valid email address'),
-  password: z.string().min(1, 'Password is required'),
-});
+export const loginInputSchema = z
+  .object({
+    email: z.string().trim().toLowerCase().email('Enter a valid email address'),
+    password: z.string().min(1, 'Password is required'),
+  })
+  .strict();
 
 export type RegistrationInput = z.infer<typeof registrationInputSchema>;
 export type LoginInput = z.infer<typeof loginInputSchema>;
