@@ -1,0 +1,95 @@
+// Excellent Wealth — Prisma schema
+// See docs/decisions/0004-server-side-sessions.md for the session design
+// rationale and docs/security/data-flow.md for the broader data-flow model.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserStatus {
+  ACTIVE
+  DISABLED
+  PENDING_VERIFICATION
+}
+
+enum AuditEventType {
+  USER_REGISTERED
+  LOGIN_SUCCEEDED
+  LOGIN_FAILED
+  ACCOUNT_LOCKED
+  LOGOUT
+  SESSION_REVOKED
+}
+
+enum AuditOutcome {
+  SUCCESS
+  FAILURE
+}
+
+model User {
+  id                   String    @id @default(uuid())
+  /// Email address as the user entered it (for display only).
+  email                String    @db.VarChar(254)
+  /// Trimmed, lowercased email used for lookup and uniqueness.
+  emailNormalized      String    @unique @db.VarChar(254)
+  passwordHash         String
+  displayName          String    @db.VarChar(120)
+  currency             String    @default("USD") @db.VarChar(3)
+  timezone             String    @default("UTC") @db.VarChar(64)
+  status               UserStatus @default(ACTIVE)
+  emailVerifiedAt      DateTime?
+  failedLoginAttempts  Int       @default(0)
+  lockedUntil          DateTime?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+  lastLoginAt          DateTime?
+
+  sessions             Session[]
+  auditEvents          AuditEvent[]
+
+  @@index([emailNormalized])
+  @@map("users")
+}
+
+model Session {
+  id          String    @id @default(uuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// SHA-256 hash of the opaque session token. The raw token is never stored.
+  tokenHash   String    @unique
+  expiresAt   DateTime
+  revokedAt   DateTime?
+  createdAt   DateTime  @default(now())
+  lastUsedAt  DateTime?
+  /// Hash of the client IP (not the raw IP) for abuse investigation without
+  /// retaining precise location data indefinitely.
+  ipHash      String?
+  userAgent   String?   @db.VarChar(300)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("sessions")
+}
+
+model AuditEvent {
+  id         String         @id @default(uuid())
+  userId     String?
+  user       User?          @relation(fields: [userId], references: [id], onDelete: SetNull)
+  eventType  AuditEventType
+  outcome    AuditOutcome
+  requestId  String?        @db.VarChar(64)
+  /// Small, non-sensitive structured context (e.g. { "reason": "bad_password" }).
+  /// Never store passwords, tokens, or full request bodies here.
+  metadata   Json?
+  createdAt  DateTime       @default(now())
+
+  @@index([userId])
+  @@index([eventType])
+  @@index([createdAt])
+  @@map("audit_events")
+}
